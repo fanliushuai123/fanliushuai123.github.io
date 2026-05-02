@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THERESA · W — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #080808;
+    color: #e8d5b0;
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ===== CUSTOM CURSOR ===== */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: #e8d5b0;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    z-index: 9999;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 0.5px solid rgba(232, 213, 176, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.4s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    z-index: 9998;
+  }
+  body:has(.slide-wrap:hover) .cursor-ring {
+    width: 60px; height: 60px;
+    opacity: 0.6;
+  }
+
+  /* ===== TOP NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.8rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(8,8,8,0.9), transparent);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.35em;
+    color: rgba(232, 213, 176, 0.9);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 3rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: #e8d5b0; }
+
+  /* ===== HERO SLIDER ===== */
+  .slide-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+    transition: transform 0.85s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  .slide {
+    flex: 0 0 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+  .slide-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.12);
+    transition: transform 7s ease;
+    will-change: transform;
+  }
+  .slide.active .slide-bg { transform: scale(1); }
+  .slide-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.88) 0%,
+      rgba(0,0,0,0.15) 55%,
+      rgba(0,0,0,0.25) 100%
+    );
+  }
+  .slide-content {
+    position: relative;
+    z-index: 2;
+    padding: 4rem 4rem 4.5rem;
+    width: 100%;
+  }
+  .slide-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: rgba(232,213,176,0.45);
+    margin-bottom: 1rem;
+  }
+  .slide-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    color: #e8d5b0;
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    transform: translateY(40px);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.16,1,0.3,1), opacity 1s cubic-bezier(0.16,1,0.3,1);
+  }
+  .slide.active .slide-title { transform: translateY(0); opacity: 1; }
+  .slide-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    font-weight: 300;
+    transform: translateY(25px); opacity: 0;
+    transition: transform 1s 0.12s cubic-bezier(0.16,1,0.3,1), opacity 1s 0.12s cubic-bezier(0.16,1,0.3,1);
+  }
+  .slide.active .slide-sub { transform: translateY(0); opacity: 1; }
+  .slide-tag {
+    display: inline-block;
+    border: 0.5px solid rgba(232,213,176,0.25);
+    color: rgba(232,213,176,0.55);
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    padding: 0.35rem 1rem;
+    margin-top: 1.2rem;
+    text-transform: uppercase;
+    transform: translateY(20px); opacity: 0;
+    transition: transform 1s 0.22s cubic-bezier(0.16,1,0.3,1), opacity 1s 0.22s cubic-bezier(0.16,1,0.3,1);
+  }
+  .slide.active .slide-tag { transform: translateY(0); opacity: 1; }
+
+  /* NAV DOTS */
+  .nav-dots {
+    position: absolute;
+    bottom: 4.5rem; right: 4rem;
+    display: flex; flex-direction: column;
+    gap: 10px; z-index: 10;
+  }
+  .dot {
+    width: 2px; height: 22px;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+  .dot.active { background: #e8d5b0; height: 44px; }
+  .dot:hover { background: rgba(232,213,176,0.6); }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 1.5px;
+    background: #e8d5b0;
+    width: 0; z-index: 10;
+    transition: width 0.1s linear;
+  }
+
+  /* SLIDE COUNTER */
+  .slide-counter {
+    position: absolute;
+    bottom: 4.5rem; left: 4rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.25);
+    z-index: 10;
+  }
+
+  /* AUTO BADGE */
+  .auto-badge {
+    position: absolute;
+    top: 6rem; left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    color: rgba(232,213,176,0.35);
+    border: 0.5px solid rgba(232,213,176,0.12);
+    padding: 0.3rem 1.1rem;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .auto-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #e8d5b0;
+    animation: blink 1.6s ease infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:0.2} 50%{opacity:1} }
+
+  /* ===== WORKS GRID SECTION ===== */
+  .section {
+    padding: 8rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: rgba(232,213,176,0.35);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: #e8d5b0;
+    line-height: 1;
+    margin-bottom: 4rem;
+  }
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 60px;
+    gap: 16px;
+  }
+  .work-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .work-card:nth-child(1) { grid-column: span 7; grid-row: span 8; }
+  .work-card:nth-child(2) { grid-column: span 5; grid-row: span 5; }
+  .work-card:nth-child(3) { grid-column: span 5; grid-row: span 3; }
+  .work-card:nth-child(4) { grid-column: span 4; grid-row: span 5; }
+  .work-card:nth-child(5) { grid-column: span 8; grid-row: span 5; }
+  .work-img {
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .work-card:hover .work-img { transform: scale(1.06); }
+  .work-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .work-card:hover .work-overlay { opacity: 1; }
+  .work-info {
+    position: absolute;
+    bottom: 1.2rem; left: 1.5rem;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+  .work-card:hover .work-info { transform: translateY(0); opacity: 1; }
+  .work-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    color: #e8d5b0;
+  }
+  .work-medium {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+  }
+
+  /* ===== ABOUT SECTION ===== */
+  .about-section {
+    padding: 8rem 4rem;
+    border-top: 0.5px solid rgba(232,213,176,0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  .about-img-wrap {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+  }
+  .about-img {
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80');
+    transition: transform 8s ease;
+  }
+  .about-img-wrap:hover .about-img { transform: scale(1.05); }
+  .about-frame {
+    position: absolute;
+    top: 1.5rem; left: 1.5rem; right: -1.5rem; bottom: -1.5rem;
+    border: 0.5px solid rgba(232,213,176,0.2);
+    pointer-events: none;
+  }
+  .about-text .section-label { margin-bottom: 0.5rem; }
+  .about-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    color: #e8d5b0;
+    line-height: 1;
+    margin-bottom: 2rem;
+  }
+  .about-desc {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+  .about-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid rgba(232,213,176,0.1);
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: #e8d5b0;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 4rem;
+    border-top: 0.5px solid rgba(232,213,176,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.35em;
+    color: rgba(232,213,176,0.5);
+  }
+  .footer-copy {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+  }
+  .footer-cta {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: rgba(232,213,176,0.6);
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 0.5px solid rgba(232,213,176,0.3);
+    padding-bottom: 2px;
+    transition: color 0.3s;
+  }
+  .footer-cta:hover { color: #e8d5b0; }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.35s; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 768px) {
+    nav { padding: 1.5rem 1.5rem; }
+    .nav-links { display: none; }
+    .slide-content { padding: 2rem 1.5rem 3rem; }
+    .section { padding: 4rem 1.5rem; }
+    .works-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 120px;
+    }
+    .work-card:nth-child(1) { grid-column: span 2; grid-row: span 3; }
+    .work-card:nth-child(2) { grid-column: span 1; grid-row: span 2; }
+    .work-card:nth-child(3) { grid-column: span 1; grid-row: span 2; }
+    .work-card:nth-child(4) { grid-column: span 1; grid-row: span 2; }
+    .work-card:nth-child(5) { grid-column: span 1; grid-row: span 2; }
+    .about-section { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem; }
+    .nav-dots { right: 1.5rem; }
+    .slide-counter { left: 1.5rem; }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 3rem 1.5rem; }
+    .cursor, .cursor-ring { display: none; }
+    body { cursor: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">THERESA · W</a>
+  <ul class="nav-links">
+    <li><a href="#works">作品</a></li>
+    <li><a href="#about">关于我</a></li>
+    <li><a href="mailto:your@email.com">联系</a></li>
+  </ul>
+</nav>
+
+<!-- HERO SLIDER -->
+<div class="slide-wrap" id="slideWrap">
+  <div class="track" id="track">
+
+    <div class="slide active">
+      <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=1600&q=80')"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-content">
+        <div class="slide-num">001 — SCULPTURE</div>
+        <div class="slide-title">Shattered<br>Silence</div>
+        <div class="slide-sub">陶瓷雕塑 · 2024</div>
+        <div class="slide-tag">Visual Design · Sculpture</div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=1600&q=80')"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-content">
+        <div class="slide-num">002 — DIGITAL</div>
+        <div class="slide-title">Digital<br>Bloom</div>
+        <div class="slide-sub">数字艺术 · 2024</div>
+        <div class="slide-tag">3D · Motion · Art Direction</div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1600&q=80')"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-content">
+        <div class="slide-num">003 — INSTALLATION</div>
+        <div class="slide-title">Light<br>& Matter</div>
+        <div class="slide-sub">装置艺术 · 2023</div>
+        <div class="slide-tag">Installation · Space Design</div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1604871000636-074fa5117945?w=1600&q=80')"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-content">
+        <div class="slide-num">004 — PRINT</div>
+        <div class="slide-title">Memory<br>Fragment</div>
+        <div class="slide-sub">平面印刷 · 2023</div>
+        <div class="slide-tag">Editorial · Typography</div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=1600&q=80')"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-content">
+        <div class="slide-num">005 — FILM</div>
+        <div class="slide-title">Fluid<br>Identity</div>
+        <div class="slide-sub">实验短片 · 2023</div>
+        <div class="slide-tag">Film · Color · Narrative</div>
+      </div>
+    </div>
+
+  </div><!-- /track -->
+
+  <div class="auto-badge"><div class="auto-dot"></div>自动播放中</div>
+  <div class="slide-counter" id="counter">01 / 05</div>
+  <div class="nav-dots" id="dots">
+    <div class="dot active" data-i="0"></div>
+    <div class="dot" data-i="1"></div>
+    <div class="dot" data-i="2"></div>
+    <div class="dot" data-i="3"></div>
+    <div class="dot" data-i="4"></div>
+  </div>
+  <div class="progress-bar" id="progBar"></div>
+</div>
+
+<!-- WORKS GRID -->
+<div id="works">
+  <div class="section">
+    <div class="section-label reveal">Selected Works</div>
+    <div class="section-title reveal reveal-delay-1">作品精选</div>
+    <div class="works-grid">
+      <div class="work-card reveal">
+        <div class="work-img" style="background-image:url('https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=900&q=80')"></div>
+        <div class="work-overlay"></div>
+        <div class="work-info">
+          <div class="work-name">Shattered Silence</div>
+          <div class="work-medium">Ceramic Sculpture · 2024</div>
+        </div>
+      </div>
+      <div class="work-card reveal reveal-delay-1">
+        <div class="work-img" style="background-image:url('https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=700&q=80')"></div>
+        <div class="work-overlay"></div>
+        <div class="work-info">
+          <div class="work-name">Digital Bloom</div>
+          <div class="work-medium">Digital Art · 2024</div>
+        </div>
+      </div>
+      <div class="work-card reveal reveal-delay-2">
+        <div class="work-img" style="background-image:url('https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=700&q=80')"></div>
+        <div class="work-overlay"></div>
+        <div class="work-info">
+          <div class="work-name">Fluid Identity</div>
+          <div class="work-medium">Film · 2023</div>
+        </div>
+      </div>
+      <div class="work-card reveal reveal-delay-1">
+        <div class="work-img" style="background-image:url('https://images.unsplash.com/photo-1604871000636-074fa5117945?w=600&q=80')"></div>
+        <div class="work-overlay"></div>
+        <div class="work-info">
+          <div class="work-name">Memory Fragment</div>
+          <div class="work-medium">Print · 2023</div>
+        </div>
+      </div>
+      <div class="work-card reveal reveal-delay-2">
+        <div class="work-img" style="background-image:url('https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=900&q=80')"></div>
+        <div class="work-overlay"></div>
+        <div class="work-info">
+          <div class="work-name">Light & Matter</div>
+          <div class="work-medium">Installation · 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about">
+  <div class="about-section">
+    <div class="reveal">
+      <div class="about-img-wrap">
+        <div class="about-img"></div>
+        <div class="about-frame"></div>
+      </div>
+    </div>
+    <div class="about-text">
+      <div class="section-label reveal">About</div>
+      <div class="about-name reveal reveal-delay-1">Theresa W.<br>艺术家</div>
+      <p class="about-desc reveal reveal-delay-2">
+        "My creative spirit comes alive in the digital realm. With nimble fingers flying across the device, I sculpt light and matter into dialogue — each work a conversation between the physical and the infinite."
+      </p>
+      <p class="about-desc reveal reveal-delay-3" style="font-style:normal; font-size:0.95rem;">
+        专注于雕塑、装置与数字媒介的跨界创作。作品探索材质、时间与空间的边界，以艺术哲学驱动视觉叙事。目前申请美国艺术类本科项目。
+      </p>
+      <div class="about-stats reveal">
+        <div>
+          <div class="stat-num">12</div>
+          <div class="stat-label">件作品</div>
+        </div>
+        <div>
+          <div class="stat-num">3</div>
+          <div class="stat-label">年创作</div>
+        </div>
+        <div>
+          <div class="stat-num">5</div>
+          <div class="stat-label">个展览</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">THERESA · W</div>
+  <div class="footer-copy">© 2024 · All Rights Reserved</div>
+  <a href="mailto:your@email.com" class="footer-cta">联系我</a>
+</footer>
+
+<script>
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+function animRing(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+animRing();
+
+// ===== SLIDER =====
+const track = document.getElementById('track');
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+const counter = document.getElementById('counter');
+const progBar = document.getElementById('progBar');
+const TOTAL = slides.length;
+const INTERVAL = 5000;
+let cur = 0, startX = 0, isDrag = false, progTimer = null, elapsed = 0;
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('active');
+  cur = (n + TOTAL) % TOTAL;
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('active');
+  track.style.transform = `translateX(-${cur * 100}%)`;
+  counter.textContent = (cur+1<10?'0'+(cur+1):cur+1) + ' / 0' + TOTAL;
+  resetProgress();
+}
+
+function resetProgress() {
+  clearInterval(progTimer);
+  elapsed = 0;
+  progBar.style.width = '0';
+  progTimer = setInterval(() => {
+    elapsed += 60;
+    progBar.style.width = (elapsed / INTERVAL * 100) + '%';
+    if (elapsed >= INTERVAL) { clearInterval(progTimer); goTo(cur + 1); }
+  }, 60);
+}
+
+dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.i))));
+
+// Drag / swipe
+const sw = document.getElementById('slideWrap');
+sw.addEventListener('mousedown', e => { startX = e.clientX; isDrag = true; e.preventDefault(); });
+window.addEventListener('mouseup', e => {
+  if (!isDrag) return;
+  const dx = e.clientX - startX;
+  if (Math.abs(dx) > 50) goTo(dx < 0 ? cur + 1 : cur - 1);
+  isDrag = false;
+});
+sw.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+sw.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - startX;
+  if (Math.abs(dx) > 50) goTo(dx < 0 ? cur + 1 : cur - 1);
+}, { passive: true });
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') goTo(cur + 1);
+  if (e.key === 'ArrowLeft') goTo(cur - 1);
+});
+
+resetProgress();
+
+// ===== SCROLL REVEAL =====
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
